@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/schema#",
-    "title": "mahjong-replay-format",
+    "title": "mahjong-format-replay",
     "description": "This schema descibes an exchangeable format for mahjong match replays",
     "definitions": {
         "rule_set": {
