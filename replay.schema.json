@@ -1,0 +1,70 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "title": "mahjong-replay-format",
+    "description": "This schema descibes an exchangeable format for mahjong match replays",
+    "definitions": {
+        "rule_set": {
+            "$comment": "Currently support MajSoul Riichi rules only, need to expand later to generic mahjong rules",
+            "oneOf": [
+                {
+                    "enum": ["MajSoul_ranked_ES", "MajSoul_ranked_E"]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "name":  {"const": "MajSoul_Room"},
+                        "length": {"enum":["ES","E","1","AI"]},
+                        "num_players": {"enum": [3, 4]},
+                        "think_time":{"enum": [5, 10, 20, 60]},
+                        "init_point": {"type":"integer", "multipleOf":100, "maximum":200000},
+                        "winner_point": {"type":"integer", "multipleOf":100, "maximum":200000},
+                        "num_dora": {"enum": [0, 3, 4]},
+                        "shoku_dan": {"type": "boolean"},
+                        "tips": {"type": "boolean"},
+                        "ai_rank": {"enum": [1, 2]}
+                    },
+                    "required": ["name"]
+                }
+            ]
+        },
+        "player": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"}
+            },
+            "required": ["name"]
+        },
+        "tile": {
+            "type": "string",
+            "pattern": "([0-9][msp])|([1-7]z)"
+        },
+        "init_round_record": {
+            "type": "object",
+            "properties": {
+            }
+        },
+        "record": {
+
+        }
+    },
+    "type": "object",
+    "properties": {
+        "replay_id": {"type": "string"},
+        "rule": { "$ref": "#/definitions/rule_set"},
+        "players": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/player"
+            },
+            "minItems": 3,
+            "maxItems": 4
+        },
+        "records": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/record"
+            }
+        },
+        "required": ["replay_id", "rule", "players", "records"]
+    }
+}
