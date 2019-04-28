@@ -1,0 +1,38 @@
+syntax = "proto3";
+import "proto/riichi_mahjong.proto";
+
+package mahjong;
+
+// 麻将牌谱信息
+message MahjongReplay {
+    repeated ExternalId external_ids = 1;
+
+    // 参与游戏的选手
+    repeated Player players = 2;
+
+    // 具体的麻将规则下的ReplayInfo
+    oneof replay_detail {
+        mahjong.riichi_mahjong.Replay riichi_mahjong_replay = 3;  // 立直麻将 - 标准局
+    }
+}
+
+// 代表一个外部的ID
+message ExternalId {
+    string source = 1;
+    oneof oneof_id {
+        int32 int_id = 2;
+        string string_id = 3;
+        bytes bytes_id = 4;
+    };
+}
+
+// 
+message Player {
+    // 该选手在本牌谱中的ID
+    int32 id = 1;
+
+    // 选手的名字
+    string name = 2;
+
+    repeated ExternalId external_ids = 3;
+}
