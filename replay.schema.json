@@ -38,9 +38,31 @@
             "type": "string",
             "pattern": "([0-9][msp])|([1-7]z)"
         },
-        "init_round_record": {
+        "record_init_round": {
             "type": "object",
             "properties": {
+                "record_type": {"const": "init_round"},
+                "east_player": {"type": "integer", "maximum":3, "minimum":0},
+                "round_num": {"type":"integer", "minimum": 0},
+                "subround_num": {"type": "integer", "minimum": 0},
+                "riichi_num": {"type":"integer", "minimum":0},
+                "init_hand": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": { "$ref": "#/definitions/tile"},
+                        "maxItems": 13,
+                        "minItems": 13
+                    },
+                    "maxItems": 4,
+                    "minItems": 3
+                },
+                "tile_pile": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/tile"},
+                    "maxItems": 84,
+                    "minItems": 84
+                }
             }
         },
         "record": {
