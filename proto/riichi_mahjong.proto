@@ -1,0 +1,113 @@
+syntax = "proto3";
+import "proto/common.proto";
+
+package mahjong.riichi_mahjong;
+
+
+message Replay {
+    RuleSet rule_set = 1;
+
+    int32 chii_cha = 2;  // ゲーム開始時の親を起家（チーチャ）と呼ぶ (Player ID)
+
+    repeated Kyoku kyoku= 3;
+}
+
+message RuleSet {
+    enum GameMode {
+        HAN_CHAN = 1;  // 半荘（ハンチャン）
+        II_CHAN = 2;  // 一荘（イーチャン）
+        TON_PUU_SEN = 3;  // 東風戦（トンプウセン）
+        TON_PEI_SEN = 4;  // 東北戦
+        TON_TON_SEN = 5;  // 東々戦
+        ONE_HAND = 6;  // 一局清算
+    }
+    GameMode game_mode = 1;
+
+    int32 initial_points = 2;
+    int32 final_points = 3;
+}
+
+// 局（キョク）
+// 麻雀ゲームの試合単位。配牌 から アガる 勝者が出るまで、或いは、誰も アガら ない 流局 までが 1局。
+message Kyoku {
+    // Simple ascending number sequence.
+    int32 sequence = 1;
+
+    // 場（バ）
+    // 東家（トンチャ） から始まり4人プレイヤーの全員が左回りで1度親になる1周のこと。
+    enum Ba {
+        TON_BA = 1;
+        NAN_BA = 2;
+        SHA_BA = 3;
+        PEI_BA = 4;
+    }
+    Ba ba = 2;  // A.K.A Round.
+
+    // Example of the combination of "ba", "hand" and "hon_ba":
+    // ba = TON_BA, hand = 3, hon_ba = 2 is "東 3 局 2 本場"
+    int32 hand = 3;
+
+    // 本場（ホンバ）
+    // 親が 連荘 か ノーテン で 流局 した場合に 本場 が増える。子 が アガる と０本場に戻る。例：東1局2本場（東場 の最初の 局 で親が3回 続いている状態）
+    int32 hon_ba = 4;  // A.K.A Bonus.
+
+    // 親（オヤ）
+    // 現在の 局 における 東家（トンチャ） のこと。
+    int32 oya_player_id = 5;
+
+    repeated mahjong.PlayerPoint player_points = 6;
+    repeated mahjong.PlayerPoint player_point_changes = 7;
+    KyokuResult result = 8;
+
+    repeated StoryAction actions = 9;
+}
+
+message KyokuResult {
+    enum Result {
+        TSUMO = 1;
+        RON = 2;
+        KOU_HAI_HEI_KYOKU = 3;  // 荒牌平局（ホワンパイピンチュー、こうはいへいきょく）
+        KYU_SHU_KYU_HAI = 4;  // 九種九牌（キューシュキューハイ）
+        SU_FON_REN_DA = 5;  // 四風連打（スーフーレンダ/スーフォンレンタ）
+        SU_KAN_SAN_RA = 6;  // 四槓散了（スーカンサンラ）
+        SU_CHA_RIICHI = 7;  // 四家立直（スーチャリーチ）
+        SAN_CHA_HOU = 8;  // 三家和（サンチャホー）
+
+        // Fault?
+    }
+    Result result = 1;
+
+    // Tsumo & Ron
+    int32 winning_player_id = 2;
+    mahjong.TileSet winning_player_tile_set = 3;
+}
+
+message StoryAction {
+    int32 sequence = 1;
+
+    oneof ActionDetail {
+        mahjong.RollDiceAction roll_dice = 2;
+        mahjong.DrawInitialTileAction draw_initial_tiles = 3;
+        mahjong.DrawTileAction draw_tile = 4;
+        mahjong.DiscardTileAction discard_tile = 5;
+        mahjong.MeldChowAction meld_chow = 6;
+        mahjong.MeldPongAction meld_pong = 7;
+        mahjong.MeldKongAction meld_kong = 8;
+        mahjong.ConcealedKongAction concealed_kong = 9;
+        RevealDoraAction reveal_dora = 10;
+        RevealUraDoraAction reveal_ura_dora = 11;
+    }
+}
+
+// Story Actions
+message RevealDoraAction {
+    int32 dora_pos = 1;
+    string dora_tile = 2;
+}
+
+message RevealUraDoraAction {
+    repeated string ura_dora_tiles = 1;
+}
+
+
+
